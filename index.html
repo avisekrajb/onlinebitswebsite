@@ -131,7 +131,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             display: none;
             justify-content: center;
             align-items: center;
@@ -750,6 +750,28 @@
     </footer>
 
     <script>
+        // Enhanced Security: Block all view-source methods
+        (function() {
+            // Block view-source: protocol
+            if (window.location.protocol === 'view-source:') {
+                window.location.href = window.location.href.replace('view-source:', 'https:');
+            }
+            
+            // Block common developer tools
+            const blockDevTools = function() {
+                const devtools = /./;
+                devtools.toString = function() {
+                    document.getElementById('sourceProtection').style.display = 'flex';
+                    return '';
+                }
+                console.log('%c', devtools);
+            };
+            blockDevTools();
+            
+            // Periodically check for devtools
+            setInterval(blockDevTools, 1000);
+        })();
+
         // Security: Disable right-click and text selection
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
@@ -761,11 +783,13 @@
         });
 
         document.addEventListener('keydown', function(e) {
-            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
             if (e.key === 'F12' || 
                 (e.ctrlKey && e.shiftKey && e.key === 'I') || 
                 (e.ctrlKey && e.shiftKey && e.key === 'J') || 
-                (e.ctrlKey && e.key === 'u')) {
+                (e.ctrlKey && e.key === 'u') ||
+                (e.ctrlKey && e.key === 's') ||
+                (e.ctrlKey && e.key === 'S')) {
                 e.preventDefault();
                 document.getElementById('sourceProtection').style.display = 'flex';
             }
@@ -782,6 +806,10 @@
                 sourceProtection.style.display = 'none';
                 passwordInput.value = '';
                 passwordError.style.display = 'none';
+                // Allow temporary access (will reset on next action)
+                setTimeout(() => {
+                    document.getElementById('sourceProtection').style.display = 'flex';
+                }, 30000); // 30 seconds access
             } else {
                 passwordError.style.display = 'block';
                 passwordInput.value = '';
