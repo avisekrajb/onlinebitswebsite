@@ -29,10 +29,6 @@
             color: var(--dark);
             line-height: 1.6;
             overflow-x: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
         }
 
         .container {
@@ -124,7 +120,7 @@
             transform: translateY(-3px);
         }
 
-        /* Page Source Protection */
+        /* Page Source Protection - Only for view-source */
         .source-protection {
             position: fixed;
             top: 0;
@@ -648,7 +644,7 @@
         </div>
     </div>
 
-    <!-- Page Source Protection -->
+    <!-- Page Source Protection - Only shows for view-source: -->
     <div class="source-protection" id="sourceProtection">
         <div class="password-box">
             <h3>Page Source Protection</h3>
@@ -750,125 +746,60 @@
     </footer>
 
     <script>
-        // =============================================
-        // COMPLETE PAGE SOURCE PROTECTION SYSTEM
-        // =============================================
-        
-        // Password configuration
-        const PAGE_SOURCE_PASSWORD = "12345";
-        
-        // Enhanced Security: Block ALL view-source methods
+        // Enhanced Security: Selective protection
         (function() {
-            // Method 1: Block view-source: protocol completely
-            if (window.location.protocol === 'view-source:') {
+            // Check if we're in view-source mode
+            const isViewSource = window.location.protocol === 'view-source:';
+            
+            if (isViewSource) {
+                // For view-source: URLs - show password protection immediately
+                document.getElementById('sourceProtection').style.display = 'flex';
+                
+                // Block the actual source from being displayed
                 document.body.innerHTML = '';
                 document.head.innerHTML = '';
-                document.getElementById('sourceProtection').style.display = 'flex';
-                setupPasswordProtection();
-                return;
+                
+                // Set up password protection for view-source
+                const passwordInput = document.getElementById('passwordInput');
+                const passwordSubmit = document.getElementById('passwordSubmit');
+                const passwordError = document.getElementById('passwordError');
+                
+                passwordSubmit.addEventListener('click', function() {
+                    if (passwordInput.value === '12345') {
+                        // Password correct - reload the actual page content
+                        window.location.href = window.location.href.replace('view-source:', 'https:');
+                    } else {
+                        passwordError.style.display = 'block';
+                        passwordInput.value = '';
+                    }
+                });
+                
+                // Also allow Enter key for password submission
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        passwordSubmit.click();
+                    }
+                });
+                
+                return; // Stop execution for view-source mode
             }
             
-            // Method 2: Block common developer tools
-            const blockDevTools = function() {
-                const devtools = /./;
-                devtools.toString = function() {
-                    document.getElementById('sourceProtection').style.display = 'flex';
-                    setupPasswordProtection();
-                    return '';
-                }
-                console.log('%c', devtools);
-            };
-            blockDevTools();
+            // For normal website access - no restrictions
+            // Allow right-click, text selection, etc. for normal users
+            document.addEventListener('contextmenu', function(e) {
+                // Allow right-click for normal users
+            });
             
-            // Method 3: Periodically check for devtools
-            setInterval(blockDevTools, 1000);
+            document.addEventListener('selectstart', function(e) {
+                // Allow text selection for normal users
+            });
             
-            // Method 4: Detect iframe attempts to view source
-            if (window.top !== window.self) {
-                document.getElementById('sourceProtection').style.display = 'flex';
-                setupPasswordProtection();
-            }
+            // Allow all keyboard shortcuts for normal users
+            document.addEventListener('keydown', function(e) {
+                // No blocking for normal users
+            });
             
         })();
-
-        // Setup password protection system
-        function setupPasswordProtection() {
-            const passwordInput = document.getElementById('passwordInput');
-            const passwordSubmit = document.getElementById('passwordSubmit');
-            const passwordError = document.getElementById('passwordError');
-            const sourceProtection = document.getElementById('sourceProtection');
-
-            passwordSubmit.addEventListener('click', function() {
-                if (passwordInput.value === PAGE_SOURCE_PASSWORD) {
-                    // Correct password - allow temporary access
-                    sourceProtection.style.display = 'none';
-                    passwordInput.value = '';
-                    passwordError.style.display = 'none';
-                    
-                    // Re-enable protection after 30 seconds
-                    setTimeout(() => {
-                        sourceProtection.style.display = 'flex';
-                    }, 30000);
-                } else {
-                    passwordError.style.display = 'block';
-                    passwordInput.value = '';
-                }
-            });
-
-            // Allow Enter key for password submission
-            passwordInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    passwordSubmit.click();
-                }
-            });
-        }
-
-        // Security: Disable right-click and text selection
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            showToast("Right-click is disabled");
-            document.getElementById('sourceProtection').style.display = 'flex';
-            setupPasswordProtection();
-        });
-
-        document.addEventListener('selectstart', function(e) {
-            e.preventDefault();
-        });
-
-        document.addEventListener('keydown', function(e) {
-            // Disable ALL source viewing shortcuts
-            if (e.key === 'F12' || 
-                (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-                (e.ctrlKey && e.shiftKey && e.key === 'J') || 
-                (e.ctrlKey && e.key === 'u') ||
-                (e.ctrlKey && e.key === 's') ||
-                (e.ctrlKey && e.key === 'S') ||
-                (e.ctrlKey && e.shiftKey && e.key === 'C') ||
-                (e.altKey && e.key === 'F12')) {
-                e.preventDefault();
-                document.getElementById('sourceProtection').style.display = 'flex';
-                setupPasswordProtection();
-            }
-        });
-
-        // Block drag and drop of elements
-        document.addEventListener('dragstart', function(e) {
-            e.preventDefault();
-            return false;
-        });
-
-        // Block image context menu
-        document.addEventListener('contextmenu', function(e) {
-            if (e.target.tagName === 'IMG') {
-                e.preventDefault();
-                document.getElementById('sourceProtection').style.display = 'flex';
-                setupPasswordProtection();
-            }
-        }, false);
-
-        // =============================================
-        // WEBSITE FUNCTIONALITY
-        // =============================================
 
         // Toast message function
         function showToast(message) {
@@ -926,10 +857,12 @@
         const mobileRoutinePopup = document.getElementById('mobileRoutinePopup');
         const mobileRoutineClose = document.getElementById('mobileRoutineClose');
 
-        // Show welcome popup on page load
-        window.addEventListener('load', function() {
-            welcomePopup.style.display = 'flex';
-        });
+        // Show welcome popup on page load (only for normal access)
+        if (window.location.protocol !== 'view-source:') {
+            window.addEventListener('load', function() {
+                welcomePopup.style.display = 'flex';
+            });
+        }
 
         // Close welcome popup
         closePopup.addEventListener('click', function() {
@@ -1136,10 +1069,12 @@
             }
         });
 
-        // Initial render
-        renderPDFCards(pdfFiles, pdfGrid);
-        renderPDFCards(impPdfFiles, impPdfGrid);
-        renderImageCards(imageFiles, imageGrid);
+        // Initial render (only for normal access)
+        if (window.location.protocol !== 'view-source:') {
+            renderPDFCards(pdfFiles, pdfGrid);
+            renderPDFCards(impPdfFiles, impPdfGrid);
+            renderImageCards(imageFiles, imageGrid);
+        }
     </script>
 </body>
 </html>
