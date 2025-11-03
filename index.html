@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Viewer & Downloader</title>
+    <title>Study Materials Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,10 +13,26 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff4d94;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
         body {
-            background-color: #f5f7fa;
-            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark);
             line-height: 1.6;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         .container {
@@ -24,26 +41,202 @@
             padding: 20px;
         }
 
+        /* Toast Message */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--danger);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Welcome Popup */
+        .welcome-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.5s ease;
+        }
+
+        .popup-content h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .popup-content p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .developer-id {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        .close-popup {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-popup:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        /* Page Source Protection */
+        .source-protection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .password-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .password-box h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border: 2px solid #e1e5eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .password-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .password-submit:hover {
+            background: var(--secondary);
+        }
+
+        .password-error {
+            color: var(--danger);
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Header */
         header {
             text-align: center;
             margin-bottom: 30px;
-            padding: 20px 0;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            padding: 30px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .subtitle {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
+        .device-notice {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        /* Search */
         .search-container {
             display: flex;
             justify-content: center;
@@ -58,17 +251,17 @@
 
         .search-input {
             width: 100%;
-            padding: 15px 20px;
+            padding: 15px 50px 15px 20px;
             border: none;
             border-radius: 50px;
             font-size: 1rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
 
         .search-input:focus {
             outline: none;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
             transform: translateY(-2px);
         }
 
@@ -77,17 +270,28 @@
             right: 20px;
             top: 50%;
             transform: translateY(-50%);
-            color: #6a11cb;
+            color: var(--primary);
+            font-size: 1.2rem;
         }
 
-        .pdf-grid {
+        /* Sections */
+        .section-title {
+            font-size: 1.8rem;
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary);
+            color: var(--dark);
+            display: inline-block;
+        }
+
+        .pdf-grid, .image-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
-        .pdf-card {
+        .pdf-card, .image-card {
             background: white;
             border-radius: 10px;
             overflow: hidden;
@@ -96,33 +300,50 @@
             cursor: pointer;
         }
 
-        .pdf-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        .pdf-card:hover, .image-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
         }
 
-        .pdf-icon {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            height: 120px;
+        .pdf-icon, .image-icon {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 3rem;
+            font-size: 3.5rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .pdf-info {
+        .image-icon {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--warning) 100%);
+        }
+
+        .pdf-icon::after, .image-icon::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+
+        .pdf-info, .image-info {
             padding: 20px;
         }
 
-        .pdf-name {
+        .pdf-name, .image-name {
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 10px;
-            color: #333;
+            color: var(--dark);
         }
 
-        .pdf-actions {
+        .pdf-actions, .image-actions {
             display: flex;
             justify-content: space-between;
             margin-top: 15px;
@@ -135,15 +356,18 @@
             cursor: pointer;
             font-weight: 500;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .btn-view {
-            background-color: #6a11cb;
+            background-color: var(--primary);
             color: white;
         }
 
         .btn-download {
-            background-color: #2575fc;
+            background-color: var(--secondary);
             color: white;
         }
 
@@ -152,6 +376,36 @@
             transform: scale(1.05);
         }
 
+        /* Routine Section */
+        .routine-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .routine-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .routine-image {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .routine-image:hover {
+            transform: scale(1.02);
+        }
+
+        /* Viewer */
         .viewer-container {
             display: none;
             position: fixed;
@@ -159,7 +413,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 1000;
             padding: 20px;
         }
@@ -173,6 +427,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            animation: popIn 0.3s ease;
         }
 
         .viewer-header {
@@ -180,7 +435,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            background: #f5f7fa;
+            background: var(--light);
             border-bottom: 1px solid #e1e5eb;
         }
 
@@ -194,7 +449,12 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #6a11cb;
+            color: var(--primary);
+            transition: transform 0.2s ease;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.2);
         }
 
         .pdf-frame {
@@ -202,24 +462,62 @@
             border: none;
         }
 
+        .image-view {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .full-image {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* No Results */
         .no-results {
             text-align: center;
             padding: 40px;
             font-size: 1.2rem;
             color: #666;
             display: none;
+            grid-column: 1 / -1;
         }
 
+        /* Footer */
         footer {
             text-align: center;
             margin-top: 50px;
-            padding: 20px;
+            padding: 30px;
             color: #666;
             font-size: 0.9rem;
+            border-top: 1px solid #e1e5eb;
         }
 
+        .copyright {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Mobile Optimizations */
         @media (max-width: 768px) {
-            .pdf-grid {
+            .pdf-grid, .image-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
             
@@ -228,126 +526,441 @@
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .pdf-actions, .image-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .device-notice {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+            
+            .routine-image {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pdf-grid, .image-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .popup-content {
+                padding: 20px;
+            }
+            
+            .password-box {
+                padding: 20px;
+            }
+        }
+
+        /* Mobile Routine Popup */
+        .mobile-routine-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .mobile-routine-content {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.3s ease;
+        }
+
+        .mobile-routine-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .mobile-routine-body {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .mobile-routine-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .mobile-routine-close {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .mobile-routine-close:hover {
+            background: var(--secondary);
         }
     </style>
 </head>
 <body>
+    <!-- Toast Message -->
+    <div class="toast" id="toast">
+        <i class="fas fa-exclamation-circle"></i> PDF not available for download
+    </div>
+
+    <!-- Welcome Popup -->
+    <div class="welcome-popup" id="welcomePopup">
+        <div class="popup-content">
+            <h2>Welcome to Study Materials Portal</h2>
+            <p>Access all your study materials, important questions, and semester routines in one place.</p>
+            <div class="developer-id">Developer: 22MH1A0501</div>
+            <p>Made by Abhishek</p>
+            <button class="close-popup" id="closePopup">Get Started</button>
+        </div>
+    </div>
+
+    <!-- Page Source Protection -->
+    <div class="source-protection" id="sourceProtection">
+        <div class="password-box">
+            <h3>Page Source Protection</h3>
+            <p>Enter password to view page source</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Enter password">
+            <button class="password-submit" id="passwordSubmit">Submit</button>
+            <p class="password-error" id="passwordError">Incorrect password. Please try again.</p>
+        </div>
+    </div>
+
+    <!-- Mobile Routine Popup -->
+    <div class="mobile-routine-popup" id="mobileRoutinePopup">
+        <div class="mobile-routine-content">
+            <div class="mobile-routine-header">
+                <h3>Semester Routine</h3>
+            </div>
+            <div class="mobile-routine-body">
+                <img src="sem.png" alt="Semester Routine" class="mobile-routine-image">
+                <p>Your semester schedule at a glance</p>
+                <button class="mobile-routine-close" id="mobileRoutineClose">Close</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <header>
-            <h1>PDF Viewer & Downloader</h1>
-            <p class="subtitle">Access and download your PDF files with ease</p>
+            <h1>Study Materials Portal</h1>
+            <p class="subtitle">Access PDFs, Important Questions, Images, and Semester Routines</p>
+            <div class="device-notice">
+                <i class="fas fa-desktop"></i> Use PC for better viewing experience
+            </div>
         </header>
 
         <div class="search-container">
             <div class="search-box">
-                <input type="text" class="search-input" placeholder="Search PDF files..." id="searchInput">
-                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Search PDF files, images, and more..." id="searchInput">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
             </div>
         </div>
 
+        <!-- PDF Materials Section -->
+        <h2 class="section-title">PDF Study Materials</h2>
         <div class="pdf-grid" id="pdfGrid">
             <!-- PDF cards will be dynamically generated here -->
         </div>
 
-        <div class="no-results" id="noResults">
-            No PDF files found matching your search.
+        <!-- Important Questions Section -->
+        <h2 class="section-title">Important Questions</h2>
+        <div class="pdf-grid" id="impPdfGrid">
+            <!-- Important PDF cards will be dynamically generated here -->
         </div>
 
-        <div class="viewer-container" id="viewerContainer">
+        <!-- Important Questions Images Section -->
+        <h2 class="section-title">Important Questions (Images)</h2>
+        <div class="image-grid" id="imageGrid">
+            <!-- Image cards will be dynamically generated here -->
+        </div>
+
+        <!-- Semester Routine Section -->
+        <h2 class="section-title">Semester Routine</h2>
+        <div class="routine-container">
+            <div class="routine-title">Academic Schedule 2023-2024</div>
+            <img src="sem.png" alt="Semester Routine" class="routine-image" id="routineImage">
+        </div>
+
+        <div class="no-results" id="noResults">
+            <i class="fas fa-search fa-2x" style="margin-bottom: 15px;"></i>
+            <p>No items found matching your search.</p>
+        </div>
+
+        <!-- PDF Viewer -->
+        <div class="viewer-container" id="pdfViewerContainer">
             <div class="viewer-content">
                 <div class="viewer-header">
-                    <div class="viewer-title" id="viewerTitle">PDF Viewer</div>
-                    <button class="close-btn" id="closeViewer">✕</button>
+                    <div class="viewer-title" id="pdfViewerTitle">PDF Viewer</div>
+                    <button class="close-btn" id="closePdfViewer"><i class="fas fa-times"></i></button>
                 </div>
                 <iframe class="pdf-frame" id="pdfFrame" src=""></iframe>
+            </div>
+        </div>
+
+        <!-- Image Viewer -->
+        <div class="viewer-container" id="imageViewerContainer">
+            <div class="viewer-content">
+                <div class="viewer-header">
+                    <div class="viewer-title" id="imageViewerTitle">Image Viewer</div>
+                    <button class="close-btn" id="closeImageViewer"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="image-view">
+                    <img src="" alt="Full size image" class="full-image" id="fullImage">
+                </div>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>PDF Viewer & Downloader &copy; 2023 | All rights reserved</p>
+        <div class="copyright">Copyright © Abhishek - 22MH1A0501</div>
+        <p>Study Materials Portal - All rights reserved</p>
     </footer>
 
     <script>
-        // PDF data - in a real scenario, this would come from a server
+        // Security: Disable right-click and text selection
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showToast("Right-click is disabled");
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                (e.ctrlKey && e.shiftKey && e.key === 'J') || 
+                (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+                document.getElementById('sourceProtection').style.display = 'flex';
+            }
+        });
+
+        // Page source protection
+        const sourceProtection = document.getElementById('sourceProtection');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordSubmit = document.getElementById('passwordSubmit');
+        const passwordError = document.getElementById('passwordError');
+
+        passwordSubmit.addEventListener('click', function() {
+            if (passwordInput.value === '12345') {
+                sourceProtection.style.display = 'none';
+                passwordInput.value = '';
+                passwordError.style.display = 'none';
+            } else {
+                passwordError.style.display = 'block';
+                passwordInput.value = '';
+            }
+        });
+
+        // Toast message function
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // PDF data
         const pdfFiles = [
-            { id: 1, name: "bct.pdf", displayName: "Basic Computer Technology", path: "bct.pdf" },
-            { id: 2, name: "snsw.pdf", displayName: "Software and Network Security", path: "snsw.pdf" },
-            { id: 3, name: "cc.pdf", displayName: "Cloud Computing", path: "cc.pdf" },
-            { id: 4, name: "uhv.pdf", displayName: "Universal Human Values", path: "uhv.pdf" },
-            { id: 5, name: "api.pdf", displayName: "Application Programming Interface", path: "api.pdf" },
-            { id: 6, name: "be.pdf", displayName: "Business Ethics", path: "be.pdf" }
+            { id: 1, name: "bct.pdf", displayName: "Basic Computer Technology", path: "bct.pdf", type: "material" },
+            { id: 2, name: "snsw.pdf", displayName: "Software and Network Security", path: "snsw.pdf", type: "material" },
+            { id: 3, name: "cc.pdf", displayName: "Cloud Computing", path: "cc.pdf", type: "material" },
+            { id: 4, name: "uhv.pdf", displayName: "Universal Human Values", path: "uhv.pdf", type: "material" },
+            { id: 5, name: "api.pdf", displayName: "Application Programming Interface", path: "api.pdf", type: "material" },
+            { id: 6, name: "be.pdf", displayName: "Business Ethics", path: "be.pdf", type: "material" }
+        ];
+
+        const impPdfFiles = [
+            { id: 101, name: "impcc.pdf", displayName: "Important Questions - Cloud Computing", path: "impcc.pdf", type: "imp-material" },
+            { id: 102, name: "impsnsw.pdf", displayName: "Important Questions - Software & Network Security", path: "impsnsw.pdf", type: "imp-material" },
+            { id: 103, name: "impbe.pdf", displayName: "Important Questions - Business Ethics", path: "impbe.pdf", type: "imp-material" },
+            { id: 104, name: "impapi.pdf", displayName: "Important Questions - API", path: "impapi.pdf", type: "imp-material" },
+            { id: 105, name: "impuhv.pdf", displayName: "Important Questions - UHV", path: "impuhv.pdf", type: "imp-material" }
+        ];
+
+        const imageFiles = [
+            { id: 201, name: "impcc.jpg", displayName: "Important Questions - Cloud Computing", path: "https://via.placeholder.com/600x800/4a90e2/ffffff?text=Cloud+Computing+Important+Questions", type: "image" },
+            { id: 202, name: "impsnsw.jpg", displayName: "Important Questions - SNSW", path: "https://via.placeholder.com/600x800/50c878/ffffff?text=SNSW+Important+Questions", type: "image" },
+            { id: 203, name: "impbe.jpg", displayName: "Important Questions - Business Ethics", path: "https://via.placeholder.com/600x800/ff6b6b/ffffff?text=Business+Ethics+Important+Questions", type: "image" },
+            { id: 204, name: "impapi.jpg", displayName: "Important Questions - API", path: "https://via.placeholder.com/600x800/9b59b6/ffffff?text=API+Important+Questions", type: "image" },
+            { id: 205, name: "impuhv.jpg", displayName: "Important Questions - UHV", path: "https://via.placeholder.com/600x800/f39c12/ffffff?text=UHV+Important+Questions", type: "image" }
         ];
 
         // DOM elements
+        const welcomePopup = document.getElementById('welcomePopup');
+        const closePopup = document.getElementById('closePopup');
         const pdfGrid = document.getElementById('pdfGrid');
+        const impPdfGrid = document.getElementById('impPdfGrid');
+        const imageGrid = document.getElementById('imageGrid');
         const searchInput = document.getElementById('searchInput');
         const noResults = document.getElementById('noResults');
-        const viewerContainer = document.getElementById('viewerContainer');
+        const pdfViewerContainer = document.getElementById('pdfViewerContainer');
         const pdfFrame = document.getElementById('pdfFrame');
-        const viewerTitle = document.getElementById('viewerTitle');
-        const closeViewer = document.getElementById('closeViewer');
+        const pdfViewerTitle = document.getElementById('pdfViewerTitle');
+        const closePdfViewer = document.getElementById('closePdfViewer');
+        const imageViewerContainer = document.getElementById('imageViewerContainer');
+        const fullImage = document.getElementById('fullImage');
+        const imageViewerTitle = document.getElementById('imageViewerTitle');
+        const closeImageViewer = document.getElementById('closeImageViewer');
+        const routineImage = document.getElementById('routineImage');
+        const mobileRoutinePopup = document.getElementById('mobileRoutinePopup');
+        const mobileRoutineClose = document.getElementById('mobileRoutineClose');
+
+        // Show welcome popup on page load
+        window.addEventListener('load', function() {
+            welcomePopup.style.display = 'flex';
+        });
+
+        // Close welcome popup
+        closePopup.addEventListener('click', function() {
+            welcomePopup.style.display = 'none';
+        });
+
+        // Mobile routine handling
+        routineImage.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                mobileRoutinePopup.style.display = 'flex';
+            } else {
+                imageViewerTitle.textContent = "Semester Routine 2023";
+                fullImage.src = this.src;
+                imageViewerContainer.style.display = 'block';
+            }
+        });
+
+        mobileRoutineClose.addEventListener('click', function() {
+            mobileRoutinePopup.style.display = 'none';
+        });
 
         // Function to render PDF cards
-        function renderPDFCards(pdfs) {
-            pdfGrid.innerHTML = '';
-            
-            if (pdfs.length === 0) {
-                noResults.style.display = 'block';
-                return;
-            }
-            
-            noResults.style.display = 'none';
+        function renderPDFCards(pdfs, container) {
+            container.innerHTML = '';
             
             pdfs.forEach(pdf => {
                 const card = document.createElement('div');
                 card.className = 'pdf-card';
                 card.innerHTML = `
                     <div class="pdf-icon">
-                        <span>📄</span>
+                        <i class="fas fa-file-pdf"></i>
                     </div>
                     <div class="pdf-info">
                         <div class="pdf-name">${pdf.displayName}</div>
                         <div class="pdf-actions">
-                            <button class="btn btn-view" data-id="${pdf.id}">View</button>
-                            <button class="btn btn-download" data-id="${pdf.id}">Download</button>
+                            <button class="btn btn-view" data-id="${pdf.id}" data-type="${pdf.type}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-download" data-id="${pdf.id}" data-type="${pdf.type}">
+                                <i class="fas fa-download"></i> Download
+                            </button>
                         </div>
                     </div>
                 `;
-                pdfGrid.appendChild(card);
+                container.appendChild(card);
             });
+        }
+
+        // Function to render image cards
+        function renderImageCards(images, container) {
+            container.innerHTML = '';
             
-            // Add event listeners to buttons
-            document.querySelectorAll('.btn-view').forEach(button => {
-                button.addEventListener('click', function() {
-                    const pdfId = this.getAttribute('data-id');
-                    openPDFViewer(pdfId);
-                });
-            });
-            
-            document.querySelectorAll('.btn-download').forEach(button => {
-                button.addEventListener('click', function() {
-                    const pdfId = this.getAttribute('data-id');
-                    downloadPDF(pdfId);
-                });
+            images.forEach(image => {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                card.innerHTML = `
+                    <div class="image-icon">
+                        <i class="fas fa-file-image"></i>
+                    </div>
+                    <div class="image-info">
+                        <div class="image-name">${image.displayName}</div>
+                        <div class="image-actions">
+                            <button class="btn btn-view" data-id="${image.id}" data-type="${image.type}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-download" data-id="${image.id}" data-type="${image.type}">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
             });
         }
 
         // Function to open PDF viewer
-        function openPDFViewer(pdfId) {
-            const pdf = pdfFiles.find(p => p.id == pdfId);
+        function openPDFViewer(pdfId, type) {
+            let pdf;
+            if (type === 'material') {
+                pdf = pdfFiles.find(p => p.id == pdfId);
+            } else {
+                pdf = impPdfFiles.find(p => p.id == pdfId);
+            }
+            
             if (pdf) {
-                viewerTitle.textContent = pdf.displayName;
+                pdfViewerTitle.textContent = pdf.displayName;
                 pdfFrame.src = pdf.path;
-                viewerContainer.style.display = 'block';
+                pdfViewerContainer.style.display = 'block';
+            }
+        }
+
+        // Function to open image viewer
+        function openImageViewer(imageId) {
+            const image = imageFiles.find(i => i.id == imageId);
+            if (image) {
+                imageViewerTitle.textContent = image.displayName;
+                fullImage.src = image.path;
+                imageViewerContainer.style.display = 'block';
             }
         }
 
         // Function to download PDF
-        function downloadPDF(pdfId) {
-            const pdf = pdfFiles.find(p => p.id == pdfId);
+        function downloadPDF(pdfId, type) {
+            showToast("PDF not available for download");
+            // In a real implementation, you would enable this:
+            /*
+            let pdf;
+            if (type === 'material') {
+                pdf = pdfFiles.find(p => p.id == pdfId);
+            } else {
+                pdf = impPdfFiles.find(p => p.id == pdfId);
+            }
+            
             if (pdf) {
                 // Create a temporary link to trigger download
                 const link = document.createElement('a');
@@ -357,37 +970,113 @@
                 link.click();
                 document.body.removeChild(link);
             }
+            */
         }
 
-        // Function to filter PDFs based on search
-        function filterPDFs(searchTerm) {
-            const filtered = pdfFiles.filter(pdf => 
+        // Function to download image
+        function downloadImage(imageId) {
+            const image = imageFiles.find(i => i.id == imageId);
+            if (image) {
+                // Create a temporary link to trigger download
+                const link = document.createElement('a');
+                link.href = image.path;
+                link.download = image.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // Function to filter items based on search
+        function filterItems(searchTerm) {
+            const allItems = [...pdfFiles, ...impPdfFiles, ...imageFiles];
+            const filteredPdfs = pdfFiles.filter(pdf => 
                 pdf.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                 pdf.displayName.toLowerCase().includes(searchTerm.toLowerCase())
             );
-            renderPDFCards(filtered);
+            
+            const filteredImpPdfs = impPdfFiles.filter(pdf => 
+                pdf.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                pdf.displayName.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            const filteredImages = imageFiles.filter(image => 
+                image.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                image.displayName.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            renderPDFCards(filteredPdfs, pdfGrid);
+            renderPDFCards(filteredImpPdfs, impPdfGrid);
+            renderImageCards(filteredImages, imageGrid);
+            
+            // Show no results message if nothing matches
+            if (filteredPdfs.length === 0 && filteredImpPdfs.length === 0 && filteredImages.length === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
         }
 
-        // Event listeners
-        searchInput.addEventListener('input', function() {
-            filterPDFs(this.value);
+        // Event listeners for buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-view')) {
+                const id = e.target.getAttribute('data-id');
+                const type = e.target.getAttribute('data-type');
+                
+                if (type === 'image') {
+                    openImageViewer(id);
+                } else {
+                    openPDFViewer(id, type);
+                }
+            }
+            
+            if (e.target.classList.contains('btn-download')) {
+                const id = e.target.getAttribute('data-id');
+                const type = e.target.getAttribute('data-type');
+                
+                if (type === 'image') {
+                    downloadImage(id);
+                } else {
+                    downloadPDF(id, type);
+                }
+            }
         });
 
-        closeViewer.addEventListener('click', function() {
-            viewerContainer.style.display = 'none';
+        // Event listeners for search
+        searchInput.addEventListener('input', function() {
+            filterItems(this.value);
+        });
+
+        // Close viewers
+        closePdfViewer.addEventListener('click', function() {
+            pdfViewerContainer.style.display = 'none';
             pdfFrame.src = '';
         });
 
-        // Close viewer when clicking outside the content
-        viewerContainer.addEventListener('click', function(e) {
-            if (e.target === viewerContainer) {
-                viewerContainer.style.display = 'none';
+        closeImageViewer.addEventListener('click', function() {
+            imageViewerContainer.style.display = 'none';
+            fullImage.src = '';
+        });
+
+        // Close viewers when clicking outside the content
+        pdfViewerContainer.addEventListener('click', function(e) {
+            if (e.target === pdfViewerContainer) {
+                pdfViewerContainer.style.display = 'none';
                 pdfFrame.src = '';
             }
         });
 
+        imageViewerContainer.addEventListener('click', function(e) {
+            if (e.target === imageViewerContainer) {
+                imageViewerContainer.style.display = 'none';
+                fullImage.src = '';
+            }
+        });
+
         // Initial render
-        renderPDFCards(pdfFiles);
+        renderPDFCards(pdfFiles, pdfGrid);
+        renderPDFCards(impPdfFiles, impPdfGrid);
+        renderImageCards(imageFiles, imageGrid);
     </script>
 </body>
 </html>
