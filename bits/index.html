@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer & Downloader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .search-box {
+            width: 70%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6a11cb;
+        }
+
+        .pdf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .pdf-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .pdf-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .pdf-icon {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .pdf-info {
+            padding: 20px;
+        }
+
+        .pdf-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .pdf-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-view {
+            background-color: #6a11cb;
+            color: white;
+        }
+
+        .btn-download {
+            background-color: #2575fc;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .viewer-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .viewer-content {
+            background: white;
+            width: 90%;
+            height: 90%;
+            margin: 2% auto;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f5f7fa;
+            border-bottom: 1px solid #e1e5eb;
+        }
+
+        .viewer-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6a11cb;
+        }
+
+        .pdf-frame {
+            flex: 1;
+            border: none;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #666;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .pdf-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .search-box {
+                width: 90%;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PDF Viewer & Downloader</h1>
+            <p class="subtitle">Access and download your PDF files with ease</p>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search PDF files..." id="searchInput">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+
+        <div class="pdf-grid" id="pdfGrid">
+            <!-- PDF cards will be dynamically generated here -->
+        </div>
+
+        <div class="no-results" id="noResults">
+            No PDF files found matching your search.
+        </div>
+
+        <div class="viewer-container" id="viewerContainer">
+            <div class="viewer-content">
+                <div class="viewer-header">
+                    <div class="viewer-title" id="viewerTitle">PDF Viewer</div>
+                    <button class="close-btn" id="closeViewer">✕</button>
+                </div>
+                <iframe class="pdf-frame" id="pdfFrame" src=""></iframe>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>PDF Viewer & Downloader &copy; 2023 | All rights reserved</p>
+    </footer>
+
+    <script>
+        // PDF data - in a real scenario, this would come from a server
+        const pdfFiles = [
+            { id: 1, name: "bct.pdf", displayName: "Basic Computer Technology", path: "bct.pdf" },
+            { id: 2, name: "snsw.pdf", displayName: "Software and Network Security", path: "snsw.pdf" },
+            { id: 3, name: "cc.pdf", displayName: "Cloud Computing", path: "cc.pdf" },
+            { id: 4, name: "uhv.pdf", displayName: "Universal Human Values", path: "uhv.pdf" },
+            { id: 5, name: "api.pdf", displayName: "Application Programming Interface", path: "api.pdf" },
+            { id: 6, name: "be.pdf", displayName: "Business Ethics", path: "be.pdf" }
+        ];
+
+        // DOM elements
+        const pdfGrid = document.getElementById('pdfGrid');
+        const searchInput = document.getElementById('searchInput');
+        const noResults = document.getElementById('noResults');
+        const viewerContainer = document.getElementById('viewerContainer');
+        const pdfFrame = document.getElementById('pdfFrame');
+        const viewerTitle = document.getElementById('viewerTitle');
+        const closeViewer = document.getElementById('closeViewer');
+
+        // Function to render PDF cards
+        function renderPDFCards(pdfs) {
+            pdfGrid.innerHTML = '';
+            
+            if (pdfs.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            
+            pdfs.forEach(pdf => {
+                const card = document.createElement('div');
+                card.className = 'pdf-card';
+                card.innerHTML = `
+                    <div class="pdf-icon">
+                        <span>📄</span>
+                    </div>
+                    <div class="pdf-info">
+                        <div class="pdf-name">${pdf.displayName}</div>
+                        <div class="pdf-actions">
+                            <button class="btn btn-view" data-id="${pdf.id}">View</button>
+                            <button class="btn btn-download" data-id="${pdf.id}">Download</button>
+                        </div>
+                    </div>
+                `;
+                pdfGrid.appendChild(card);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.btn-view').forEach(button => {
+                button.addEventListener('click', function() {
+                    const pdfId = this.getAttribute('data-id');
+                    openPDFViewer(pdfId);
+                });
+            });
+            
+            document.querySelectorAll('.btn-download').forEach(button => {
+                button.addEventListener('click', function() {
+                    const pdfId = this.getAttribute('data-id');
+                    downloadPDF(pdfId);
+                });
+            });
+        }
+
+        // Function to open PDF viewer
+        function openPDFViewer(pdfId) {
+            const pdf = pdfFiles.find(p => p.id == pdfId);
+            if (pdf) {
+                viewerTitle.textContent = pdf.displayName;
+                pdfFrame.src = pdf.path;
+                viewerContainer.style.display = 'block';
+            }
+        }
+
+        // Function to download PDF
+        function downloadPDF(pdfId) {
+            const pdf = pdfFiles.find(p => p.id == pdfId);
+            if (pdf) {
+                // Create a temporary link to trigger download
+                const link = document.createElement('a');
+                link.href = pdf.path;
+                link.download = pdf.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // Function to filter PDFs based on search
+        function filterPDFs(searchTerm) {
+            const filtered = pdfFiles.filter(pdf => 
+                pdf.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                pdf.displayName.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            renderPDFCards(filtered);
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', function() {
+            filterPDFs(this.value);
+        });
+
+        closeViewer.addEventListener('click', function() {
+            viewerContainer.style.display = 'none';
+            pdfFrame.src = '';
+        });
+
+        // Close viewer when clicking outside the content
+        viewerContainer.addEventListener('click', function(e) {
+            if (e.target === viewerContainer) {
+                viewerContainer.style.display = 'none';
+                pdfFrame.src = '';
+            }
+        });
+
+        // Initial render
+        renderPDFCards(pdfFiles);
+    </script>
+</body>
+</html>
