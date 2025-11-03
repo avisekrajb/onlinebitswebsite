@@ -752,16 +752,21 @@
     <script>
         // Enhanced Security: Block all view-source methods
         (function() {
-            // Block view-source: protocol
+            // Block view-source: protocol completely
             if (window.location.protocol === 'view-source:') {
+                // Redirect to main page instead of showing password popup
                 window.location.href = window.location.href.replace('view-source:', 'https:');
+                return;
             }
             
             // Block common developer tools
             const blockDevTools = function() {
                 const devtools = /./;
                 devtools.toString = function() {
-                    document.getElementById('sourceProtection').style.display = 'flex';
+                    // Only show password popup for devtools, not for view-source:
+                    if (window.location.protocol !== 'view-source:') {
+                        document.getElementById('sourceProtection').style.display = 'flex';
+                    }
                     return '';
                 }
                 console.log('%c', devtools);
@@ -791,7 +796,10 @@
                 (e.ctrlKey && e.key === 's') ||
                 (e.ctrlKey && e.key === 'S')) {
                 e.preventDefault();
-                document.getElementById('sourceProtection').style.display = 'flex';
+                // Only show password popup for keyboard shortcuts, not for view-source:
+                if (window.location.protocol !== 'view-source:') {
+                    document.getElementById('sourceProtection').style.display = 'flex';
+                }
             }
         });
 
@@ -808,7 +816,9 @@
                 passwordError.style.display = 'none';
                 // Allow temporary access (will reset on next action)
                 setTimeout(() => {
-                    document.getElementById('sourceProtection').style.display = 'flex';
+                    if (window.location.protocol !== 'view-source:') {
+                        document.getElementById('sourceProtection').style.display = 'flex';
+                    }
                 }, 30000); // 30 seconds access
             } else {
                 passwordError.style.display = 'block';
@@ -980,25 +990,6 @@
         // Function to download PDF
         function downloadPDF(pdfId, type) {
             showToast("PDF not available for download");
-            // In a real implementation, you would enable this:
-            /*
-            let pdf;
-            if (type === 'material') {
-                pdf = pdfFiles.find(p => p.id == pdfId);
-            } else {
-                pdf = impPdfFiles.find(p => p.id == pdfId);
-            }
-            
-            if (pdf) {
-                // Create a temporary link to trigger download
-                const link = document.createElement('a');
-                link.href = pdf.path;
-                link.download = pdf.name;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-            */
         }
 
         // Function to download image
