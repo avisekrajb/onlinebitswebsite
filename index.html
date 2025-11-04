@@ -22,6 +22,11 @@
             --success: #28a745;
             --warning: #ffc107;
             --danger: #dc3545;
+            --info: #17a2b8;
+            --purple: #8e44ad;
+            --orange: #e67e22;
+            --teal: #1abc9c;
+            --pink: #e84393;
         }
 
         body {
@@ -29,6 +34,10 @@
             color: var(--dark);
             line-height: 1.6;
             overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         .container {
@@ -42,7 +51,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: var(--danger);
+            background: var(--success);
             color: white;
             padding: 15px 25px;
             border-radius: 8px;
@@ -50,6 +59,10 @@
             z-index: 1000;
             display: none;
             animation: slideIn 0.3s ease;
+        }
+
+        .toast.error {
+            background: var(--danger);
         }
 
         @keyframes slideIn {
@@ -120,14 +133,14 @@
             transform: translateY(-3px);
         }
 
-        /* Page Source Protection - Only for view-source */
+        /* Page Source Protection */
         .source-protection {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             justify-content: center;
             align-items: center;
@@ -302,7 +315,6 @@
         }
 
         .pdf-icon, .image-icon {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             height: 140px;
             display: flex;
             align-items: center;
@@ -311,6 +323,10 @@
             font-size: 3.5rem;
             position: relative;
             overflow: hidden;
+        }
+
+        .pdf-icon {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
         }
 
         .image-icon {
@@ -511,10 +527,92 @@
             to { transform: scale(1); opacity: 1; }
         }
 
+        /* View More/Less Button */
+        .view-more-btn {
+            display: block;
+            margin: 30px auto;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .view-more-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        /* Mini View for Mobile */
+        .mini-view {
+            display: none;
+        }
+
+        .mini-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .mini-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .mini-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .mini-info {
+            flex: 1;
+        }
+
+        .mini-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .mini-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mini-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         /* Mobile Optimizations */
         @media (max-width: 768px) {
             .pdf-grid, .image-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                display: none;
+            }
+            
+            .mini-view {
+                display: block;
             }
             
             .search-box {
@@ -546,6 +644,11 @@
             
             .routine-image {
                 max-width: 100%;
+            }
+            
+            .mini-btn {
+                font-size: 0.7rem;
+                padding: 5px 8px;
             }
         }
 
@@ -625,12 +728,213 @@
         .mobile-routine-close:hover {
             background: var(--secondary);
         }
+
+        /* Stats Section */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 30px 0;
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            flex: 1;
+            min-width: 150px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e1e5eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+            color: #f0f0f0;
+        }
+
+        body.dark-mode header {
+            background: linear-gradient(135deg, #2d0b5a 0%, #0d2f6e 100%);
+        }
+
+        body.dark-mode .pdf-card,
+        body.dark-mode .image-card,
+        body.dark-mode .routine-container,
+        body.dark-mode .stat-card,
+        body.dark-mode .mini-card {
+            background: #2d2d2d;
+            color: #f0f0f0;
+        }
+
+        body.dark-mode .pdf-name,
+        body.dark-mode .image-name,
+        body.dark-mode .routine-title,
+        body.dark-mode .section-title,
+        body.dark-mode .mini-name {
+            color: #f0f0f0;
+        }
+
+        body.dark-mode .search-input {
+            background: #2d2d2d;
+            color: #f0f0f0;
+        }
+
+        body.dark-mode footer {
+            border-top: 1px solid #444;
+            color: #aaa;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        /* Quick Actions Menu */
+        .quick-actions {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 98;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .quick-actions.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .quick-action {
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .quick-action:hover {
+            transform: scale(1.1);
+        }
+
+        /* Subject Icons */
+        .subject-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
     <!-- Toast Message -->
     <div class="toast" id="toast">
-        <i class="fas fa-exclamation-circle"></i> PDF not available for download
+        <i class="fas fa-check-circle"></i> Download started
     </div>
 
     <!-- Welcome Popup -->
@@ -644,7 +948,7 @@
         </div>
     </div>
 
-    <!-- Page Source Protection - Only shows for view-source: -->
+    <!-- Page Source Protection -->
     <div class="source-protection" id="sourceProtection">
         <div class="password-box">
             <h3>Page Source Protection</h3>
@@ -669,14 +973,68 @@
         </div>
     </div>
 
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Floating Action Button -->
+    <div class="fab" id="fab">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions" id="quickActions">
+        <div class="quick-action" id="quickDownload" title="Download All">
+            <i class="fas fa-download"></i>
+        </div>
+        <div class="quick-action" id="quickSearch" title="Search">
+            <i class="fas fa-search"></i>
+        </div>
+        <div class="quick-action" id="quickRoutine" title="Routine">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <h1>Study Materials Portal</h1>
             <p class="subtitle">Access PDFs, Important Questions, Images, and Semester Routines</p>
             <div class="device-notice">
-                <i class="fas fa-desktop"></i> Use PC for better viewing experience
+                <i class="fas fa-mobile-alt"></i> Optimized for mobile devices
             </div>
         </header>
+
+        <!-- Stats Section -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="totalPdfs">0</div>
+                <div class="stat-label">PDF Materials</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalImpQuestions">0</div>
+                <div class="stat-label">Important Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalImages">0</div>
+                <div class="stat-label">Question Images</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">1</div>
+                <div class="stat-label">Semester Routine</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Study Progress</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
 
         <div class="search-container">
             <div class="search-box">
@@ -691,11 +1049,23 @@
             <!-- PDF cards will be dynamically generated here -->
         </div>
 
+        <div class="mini-view" id="pdfMiniView">
+            <!-- Mini PDF cards will be dynamically generated here -->
+        </div>
+
+        <button class="view-more-btn" id="viewMorePdfs">View More</button>
+
         <!-- Important Questions Section -->
         <h2 class="section-title">Important Questions</h2>
         <div class="pdf-grid" id="impPdfGrid">
             <!-- Important PDF cards will be dynamically generated here -->
         </div>
+
+        <div class="mini-view" id="impPdfMiniView">
+            <!-- Mini Important PDF cards will be dynamically generated here -->
+        </div>
+
+        <button class="view-more-btn" id="viewMoreImpPdfs">View More</button>
 
         <!-- Important Questions Images Section -->
         <h2 class="section-title">Important Questions (Images)</h2>
@@ -703,11 +1073,22 @@
             <!-- Image cards will be dynamically generated here -->
         </div>
 
+        <div class="mini-view" id="imageMiniView">
+            <!-- Mini Image cards will be dynamically generated here -->
+        </div>
+
+        <button class="view-more-btn" id="viewMoreImages">View More</button>
+
         <!-- Semester Routine Section -->
         <h2 class="section-title">Semester Routine</h2>
         <div class="routine-container">
             <div class="routine-title">Academic Schedule 2023-2024</div>
             <img src="sem.png" alt="Semester Routine" class="routine-image" id="routineImage">
+            <div class="pdf-actions" style="margin-top: 15px; justify-content: center;">
+                <button class="btn btn-download" id="downloadRoutine">
+                    <i class="fas fa-download"></i> Download Routine
+                </button>
+            </div>
         </div>
 
         <div class="no-results" id="noResults">
@@ -746,95 +1127,93 @@
     </footer>
 
     <script>
-        // Enhanced Security: Selective protection
-        (function() {
-            // Check if we're in view-source mode
-            const isViewSource = window.location.protocol === 'view-source:';
-            
-            if (isViewSource) {
-                // For view-source: URLs - show password protection immediately
+        // Security: Disable right-click and text selection
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showToast("Right-click is disabled");
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                (e.ctrlKey && e.shiftKey && e.key === 'J') || 
+                (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
                 document.getElementById('sourceProtection').style.display = 'flex';
-                
-                // Block the actual source from being displayed
-                document.body.innerHTML = '';
-                document.head.innerHTML = '';
-                
-                // Set up password protection for view-source
-                const passwordInput = document.getElementById('passwordInput');
-                const passwordSubmit = document.getElementById('passwordSubmit');
-                const passwordError = document.getElementById('passwordError');
-                
-                passwordSubmit.addEventListener('click', function() {
-                    if (passwordInput.value === '12345') {
-                        // Password correct - reload the actual page content
-                        window.location.href = window.location.href.replace('view-source:', 'https:');
-                    } else {
-                        passwordError.style.display = 'block';
-                        passwordInput.value = '';
-                    }
-                });
-                
-                // Also allow Enter key for password submission
-                passwordInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        passwordSubmit.click();
-                    }
-                });
-                
-                return; // Stop execution for view-source mode
             }
-            
-            // For normal website access - no restrictions
-            // Allow right-click, text selection, etc. for normal users
-            document.addEventListener('contextmenu', function(e) {
-                // Allow right-click for normal users
-            });
-            
-            document.addEventListener('selectstart', function(e) {
-                // Allow text selection for normal users
-            });
-            
-            // Allow all keyboard shortcuts for normal users
-            document.addEventListener('keydown', function(e) {
-                // No blocking for normal users
-            });
-            
-        })();
+        });
+
+        // Page source protection
+        const sourceProtection = document.getElementById('sourceProtection');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordSubmit = document.getElementById('passwordSubmit');
+        const passwordError = document.getElementById('passwordError');
+
+        passwordSubmit.addEventListener('click', function() {
+            if (passwordInput.value === '12345') {
+                sourceProtection.style.display = 'none';
+                passwordInput.value = '';
+                passwordError.style.display = 'none';
+            } else {
+                passwordError.style.display = 'block';
+                passwordInput.value = '';
+            }
+        });
 
         // Toast message function
-        function showToast(message) {
+        function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
-            toast.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            toast.innerHTML = isError ? 
+                `<i class="fas fa-exclamation-circle"></i> ${message}` : 
+                `<i class="fas fa-check-circle"></i> ${message}`;
+            toast.className = isError ? 'toast error' : 'toast';
             toast.style.display = 'block';
             setTimeout(() => {
                 toast.style.display = 'none';
             }, 3000);
         }
 
-        // PDF data
+        // PDF data with subject icons
         const pdfFiles = [
-            { id: 1, name: "bct.pdf", displayName: "Block Chain  Technology", path: "bct.pdf", type: "material" },
-            { id: 2, name: "snsw.pdf", displayName: "Software and Network Security", path: "snsw.pdf", type: "material" },
-            { id: 3, name: "cc.pdf", displayName: "Cloud Computing", path: "cc.pdf", type: "material" },
-            { id: 4, name: "uhv.pdf", displayName: "Universal Human Values", path: "uhv.pdf", type: "material" },
-            { id: 5, name: "api.pdf", displayName: "Application Programming Interface", path: "api.pdf", type: "material" },
-            { id: 6, name: "be.pdf", displayName: "Basic Electric", path: "be.pdf", type: "material" }
+            { id: 1, name: "bct.pdf", displayName: "Basic Computer Technology", path: "bct.pdf", type: "material", icon: "fa-laptop-code", color: "#6a11cb" },
+            { id: 2, name: "snsw.pdf", displayName: "Software and Network Security", path: "snsw.pdf", type: "material", icon: "fa-shield-alt", color: "#2575fc" },
+            { id: 3, name: "cc.pdf", displayName: "Cloud Computing", path: "cc.pdf", type: "material", icon: "fa-cloud", color: "#1abc9c" },
+            { id: 4, name: "uhv.pdf", displayName: "Universal Human Values", path: "uhv.pdf", type: "material", icon: "fa-heart", color: "#e84393" },
+            { id: 5, name: "api.pdf", displayName: "Application Programming Interface", path: "api.pdf", type: "material", icon: "fa-code", color: "#e67e22" },
+            { id: 6, name: "be.pdf", displayName: "Business Ethics", path: "be.pdf", type: "material", icon: "fa-briefcase", color: "#8e44ad" },
+            { id: 7, name: "ds.pdf", displayName: "Data Structures", path: "ds.pdf", type: "material", icon: "fa-project-diagram", color: "#3498db" },
+            { id: 8, name: "dbms.pdf", displayName: "Database Management", path: "dbms.pdf", type: "material", icon: "fa-database", color: "#2ecc71" },
+            { id: 9, name: "os.pdf", displayName: "Operating Systems", path: "os.pdf", type: "material", icon: "fa-cogs", color: "#f39c12" },
+            { id: 10, name: "ai.pdf", displayName: "Artificial Intelligence", path: "ai.pdf", type: "material", icon: "fa-robot", color: "#9b59b6" }
         ];
 
         const impPdfFiles = [
-            { id: 101, name: "impcc.pdf", displayName: "Important Questions - Cloud Computing", path: "impcc.pdf", type: "imp-material" },
-            { id: 102, name: "impsnsw.pdf", displayName: "Important Questions - Software & Network Security", path: "impsnsw.pdf", type: "imp-material" },
-            { id: 103, name: "impbe.pdf", displayName: "Important Questions - Business Ethics", path: "impbe.pdf", type: "imp-material" },
-            { id: 104, name: "impapi.pdf", displayName: "Important Questions - API", path: "impapi.pdf", type: "imp-material" },
-            { id: 105, name: "impuhv.pdf", displayName: "Important Questions - UHV", path: "impuhv.pdf", type: "imp-material" }
+            { id: 101, name: "impcc.pdf", displayName: "Important Questions - Cloud Computing", path: "impcc.pdf", type: "imp-material", icon: "fa-cloud", color: "#1abc9c" },
+            { id: 102, name: "impsnsw.pdf", displayName: "Important Questions - Software & Network Security", path: "impsnsw.pdf", type: "imp-material", icon: "fa-shield-alt", color: "#2575fc" },
+            { id: 103, name: "impbe.pdf", displayName: "Important Questions - Business Ethics", path: "impbe.pdf", type: "imp-material", icon: "fa-briefcase", color: "#8e44ad" },
+            { id: 104, name: "impapi.pdf", displayName: "Important Questions - API", path: "impapi.pdf", type: "imp-material", icon: "fa-code", color: "#e67e22" },
+            { id: 105, name: "impuhv.pdf", displayName: "Important Questions - UHV", path: "impuhv.pdf", type: "imp-material", icon: "fa-heart", color: "#e84393" },
+            { id: 106, name: "impds.pdf", displayName: "Important Questions - Data Structures", path: "impds.pdf", type: "imp-material", icon: "fa-project-diagram", color: "#3498db" },
+            { id: 107, name: "impdbms.pdf", displayName: "Important Questions - DBMS", path: "impdbms.pdf", type: "imp-material", icon: "fa-database", color: "#2ecc71" },
+            { id: 108, name: "impos.pdf", displayName: "Important Questions - OS", path: "impos.pdf", type: "imp-material", icon: "fa-cogs", color: "#f39c12" },
+            { id: 109, name: "impai.pdf", displayName: "Important Questions - AI", path: "impai.pdf", type: "imp-material", icon: "fa-robot", color: "#9b59b6" }
         ];
 
         const imageFiles = [
-            { id: 201, name: "impcc.jpg", displayName: "Important Questions - Cloud Computing", path: "https://via.placeholder.com/600x800/4a90e2/ffffff?text=Cloud+Computing+Important+Questions", type: "image" },
-            { id: 202, name: "impsnsw.jpg", displayName: "Important Questions - SNSW", path: "https://via.placeholder.com/600x800/50c878/ffffff?text=SNSW+Important+Questions", type: "image" },
-            { id: 203, name: "impbe.jpg", displayName: "Important Questions - Business Ethics", path: "https://via.placeholder.com/600x800/ff6b6b/ffffff?text=Business+Ethics+Important+Questions", type: "image" },
-            { id: 204, name: "impapi.jpg", displayName: "Important Questions - API", path: "https://via.placeholder.com/600x800/9b59b6/ffffff?text=API+Important+Questions", type: "image" },
-            { id: 205, name: "impuhv.jpg", displayName: "Important Questions - UHV", path: "https://via.placeholder.com/600x800/f39c12/ffffff?text=UHV+Important+Questions", type: "image" }
+            { id: 201, name: "impcc.jpg", displayName: "Important Questions - Cloud Computing", path: "https://via.placeholder.com/600x800/1abc9c/ffffff?text=Cloud+Computing+Important+Questions", type: "image", icon: "fa-cloud", color: "#1abc9c" },
+            { id: 202, name: "impsnsw.jpg", displayName: "Important Questions - SNSW", path: "https://via.placeholder.com/600x800/2575fc/ffffff?text=SNSW+Important+Questions", type: "image", icon: "fa-shield-alt", color: "#2575fc" },
+            { id: 203, name: "impbe.jpg", displayName: "Important Questions - Business Ethics", path: "https://via.placeholder.com/600x800/8e44ad/ffffff?text=Business+Ethics+Important+Questions", type: "image", icon: "fa-briefcase", color: "#8e44ad" },
+            { id: 204, name: "impapi.jpg", displayName: "Important Questions - API", path: "https://via.placeholder.com/600x800/e67e22/ffffff?text=API+Important+Questions", type: "image", icon: "fa-code", color: "#e67e22" },
+            { id: 205, name: "impuhv.jpg", displayName: "Important Questions - UHV", path: "https://via.placeholder.com/600x800/e84393/ffffff?text=UHV+Important+Questions", type: "image", icon: "fa-heart", color: "#e84393" },
+            { id: 206, name: "impds.jpg", displayName: "Important Questions - Data Structures", path: "https://via.placeholder.com/600x800/3498db/ffffff?text=Data+Structures+Important+Questions", type: "image", icon: "fa-project-diagram", color: "#3498db" },
+            { id: 207, name: "impdbms.jpg", displayName: "Important Questions - DBMS", path: "https://via.placeholder.com/600x800/2ecc71/ffffff?text=DBMS+Important+Questions", type: "image", icon: "fa-database", color: "#2ecc71" },
+            { id: 208, name: "impos.jpg", displayName: "Important Questions - OS", path: "https://via.placeholder.com/600x800/f39c12/ffffff?text=OS+Important+Questions", type: "image", icon: "fa-cogs", color: "#f39c12" },
+            { id: 209, name: "impai.jpg", displayName: "Important Questions - AI", path: "https://via.placeholder.com/600x800/9b59b6/ffffff?text=AI+Important+Questions", type: "image", icon: "fa-robot", color: "#9b59b6" }
         ];
 
         // DOM elements
@@ -843,6 +1222,9 @@
         const pdfGrid = document.getElementById('pdfGrid');
         const impPdfGrid = document.getElementById('impPdfGrid');
         const imageGrid = document.getElementById('imageGrid');
+        const pdfMiniView = document.getElementById('pdfMiniView');
+        const impPdfMiniView = document.getElementById('impPdfMiniView');
+        const imageMiniView = document.getElementById('imageMiniView');
         const searchInput = document.getElementById('searchInput');
         const noResults = document.getElementById('noResults');
         const pdfViewerContainer = document.getElementById('pdfViewerContainer');
@@ -856,13 +1238,33 @@
         const routineImage = document.getElementById('routineImage');
         const mobileRoutinePopup = document.getElementById('mobileRoutinePopup');
         const mobileRoutineClose = document.getElementById('mobileRoutineClose');
+        const viewMorePdfsBtn = document.getElementById('viewMorePdfs');
+        const viewMoreImpPdfsBtn = document.getElementById('viewMoreImpPdfs');
+        const viewMoreImagesBtn = document.getElementById('viewMoreImages');
+        const themeToggle = document.getElementById('themeToggle');
+        const fab = document.getElementById('fab');
+        const quickActions = document.getElementById('quickActions');
+        const quickDownload = document.getElementById('quickDownload');
+        const quickSearch = document.getElementById('quickSearch');
+        const quickRoutine = document.getElementById('quickRoutine');
+        const downloadRoutine = document.getElementById('downloadRoutine');
+        const totalPdfs = document.getElementById('totalPdfs');
+        const totalImpQuestions = document.getElementById('totalImpQuestions');
+        const totalImages = document.getElementById('totalImages');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
 
-        // Show welcome popup on page load (only for normal access)
-        if (window.location.protocol !== 'view-source:') {
-            window.addEventListener('load', function() {
-                welcomePopup.style.display = 'flex';
-            });
-        }
+        // View More/Less state
+        let pdfsVisible = 6;
+        let impPdfsVisible = 6;
+        let imagesVisible = 6;
+
+        // Show welcome popup on page load
+        window.addEventListener('load', function() {
+            welcomePopup.style.display = 'flex';
+            updateStats();
+            updateProgress();
+        });
 
         // Close welcome popup
         closePopup.addEventListener('click', function() {
@@ -885,57 +1287,123 @@
         });
 
         // Function to render PDF cards
-        function renderPDFCards(pdfs, container) {
+        function renderPDFCards(pdfs, container, isMini = false) {
             container.innerHTML = '';
             
-            pdfs.forEach(pdf => {
-                const card = document.createElement('div');
-                card.className = 'pdf-card';
-                card.innerHTML = `
-                    <div class="pdf-icon">
-                        <i class="fas fa-file-pdf"></i>
-                    </div>
-                    <div class="pdf-info">
-                        <div class="pdf-name">${pdf.displayName}</div>
-                        <div class="pdf-actions">
-                            <button class="btn btn-view" data-id="${pdf.id}" data-type="${pdf.type}">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                            <button class="btn btn-download" data-id="${pdf.id}" data-type="${pdf.type}">
-                                <i class="fas fa-download"></i> Download
-                            </button>
+            const itemsToShow = isMini ? pdfs.slice(0, pdfsVisible) : pdfs;
+            
+            itemsToShow.forEach(pdf => {
+                if (isMini) {
+                    const card = document.createElement('div');
+                    card.className = 'mini-card';
+                    card.innerHTML = `
+                        <div class="mini-icon" style="background: ${pdf.color}">
+                            <i class="fas ${pdf.icon}"></i>
                         </div>
-                    </div>
-                `;
-                container.appendChild(card);
+                        <div class="mini-info">
+                            <div class="mini-name">${pdf.displayName}</div>
+                            <div class="mini-actions">
+                                <button class="mini-btn btn-view" data-id="${pdf.id}" data-type="${pdf.type}">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="mini-btn btn-download" data-id="${pdf.id}" data-type="${pdf.type}">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                } else {
+                    const card = document.createElement('div');
+                    card.className = 'pdf-card';
+                    card.innerHTML = `
+                        <div class="pdf-icon" style="background: linear-gradient(135deg, ${pdf.color} 0%, ${adjustColor(pdf.color, 20)} 100%)">
+                            <i class="fas ${pdf.icon}"></i>
+                            <div class="subject-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                        </div>
+                        <div class="pdf-info">
+                            <div class="pdf-name">${pdf.displayName}</div>
+                            <div class="pdf-actions">
+                                <button class="btn btn-view" data-id="${pdf.id}" data-type="${pdf.type}">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="btn btn-download" data-id="${pdf.id}" data-type="${pdf.type}">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
             });
         }
 
         // Function to render image cards
-        function renderImageCards(images, container) {
+        function renderImageCards(images, container, isMini = false) {
             container.innerHTML = '';
             
-            images.forEach(image => {
-                const card = document.createElement('div');
-                card.className = 'image-card';
-                card.innerHTML = `
-                    <div class="image-icon">
-                        <i class="fas fa-file-image"></i>
-                    </div>
-                    <div class="image-info">
-                        <div class="image-name">${image.displayName}</div>
-                        <div class="image-actions">
-                            <button class="btn btn-view" data-id="${image.id}" data-type="${image.type}">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                            <button class="btn btn-download" data-id="${image.id}" data-type="${image.type}">
-                                <i class="fas fa-download"></i> Download
-                            </button>
+            const itemsToShow = isMini ? images.slice(0, imagesVisible) : images;
+            
+            itemsToShow.forEach(image => {
+                if (isMini) {
+                    const card = document.createElement('div');
+                    card.className = 'mini-card';
+                    card.innerHTML = `
+                        <div class="mini-icon" style="background: ${image.color}">
+                            <i class="fas ${image.icon}"></i>
                         </div>
-                    </div>
-                `;
-                container.appendChild(card);
+                        <div class="mini-info">
+                            <div class="mini-name">${image.displayName}</div>
+                            <div class="mini-actions">
+                                <button class="mini-btn btn-view" data-id="${image.id}" data-type="${image.type}">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="mini-btn btn-download" data-id="${image.id}" data-type="${image.type}">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                } else {
+                    const card = document.createElement('div');
+                    card.className = 'image-card';
+                    card.innerHTML = `
+                        <div class="image-icon" style="background: linear-gradient(135deg, ${image.color} 0%, ${adjustColor(image.color, 20)} 100%)">
+                            <i class="fas ${image.icon}"></i>
+                            <div class="subject-icon">
+                                <i class="fas fa-file-image"></i>
+                            </div>
+                        </div>
+                        <div class="image-info">
+                            <div class="image-name">${image.displayName}</div>
+                            <div class="image-actions">
+                                <button class="btn btn-view" data-id="${image.id}" data-type="${image.type}">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="btn btn-download" data-id="${image.id}" data-type="${image.type}">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
             });
+        }
+
+        // Helper function to adjust color brightness
+        function adjustColor(color, percent) {
+            const num = parseInt(color.replace("#", ""), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
         }
 
         // Function to open PDF viewer
@@ -966,7 +1434,25 @@
 
         // Function to download PDF
         function downloadPDF(pdfId, type) {
-            showToast("PDF not available for download");
+            let pdf;
+            if (type === 'material') {
+                pdf = pdfFiles.find(p => p.id == pdfId);
+            } else {
+                pdf = impPdfFiles.find(p => p.id == pdfId);
+            }
+            
+            if (pdf) {
+                // Create a temporary link to trigger download
+                const link = document.createElement('a');
+                link.href = pdf.path;
+                link.download = pdf.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast(`${pdf.displayName} downloaded successfully`);
+            } else {
+                showToast("PDF not found", true);
+            }
         }
 
         // Function to download image
@@ -980,12 +1466,25 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
+                showToast(`${image.displayName} downloaded successfully`);
+            } else {
+                showToast("Image not found", true);
             }
         }
 
+        // Function to download routine
+        downloadRoutine.addEventListener('click', function() {
+            const link = document.createElement('a');
+            link.href = 'sem.png';
+            link.download = 'semester_routine.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Semester routine downloaded successfully");
+        });
+
         // Function to filter items based on search
         function filterItems(searchTerm) {
-            const allItems = [...pdfFiles, ...impPdfFiles, ...imageFiles];
             const filteredPdfs = pdfFiles.filter(pdf => 
                 pdf.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                 pdf.displayName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -1004,6 +1503,9 @@
             renderPDFCards(filteredPdfs, pdfGrid);
             renderPDFCards(filteredImpPdfs, impPdfGrid);
             renderImageCards(filteredImages, imageGrid);
+            renderPDFCards(filteredPdfs, pdfMiniView, true);
+            renderPDFCards(filteredImpPdfs, impPdfMiniView, true);
+            renderImageCards(filteredImages, imageMiniView, true);
             
             // Show no results message if nothing matches
             if (filteredPdfs.length === 0 && filteredImpPdfs.length === 0 && filteredImages.length === 0) {
@@ -1015,9 +1517,10 @@
 
         // Event listeners for buttons
         document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('btn-view')) {
-                const id = e.target.getAttribute('data-id');
-                const type = e.target.getAttribute('data-type');
+            if (e.target.classList.contains('btn-view') || e.target.parentElement.classList.contains('btn-view')) {
+                const btn = e.target.classList.contains('btn-view') ? e.target : e.target.parentElement;
+                const id = btn.getAttribute('data-id');
+                const type = btn.getAttribute('data-type');
                 
                 if (type === 'image') {
                     openImageViewer(id);
@@ -1026,9 +1529,10 @@
                 }
             }
             
-            if (e.target.classList.contains('btn-download')) {
-                const id = e.target.getAttribute('data-id');
-                const type = e.target.getAttribute('data-type');
+            if (e.target.classList.contains('btn-download') || e.target.parentElement.classList.contains('btn-download')) {
+                const btn = e.target.classList.contains('btn-download') ? e.target : e.target.parentElement;
+                const id = btn.getAttribute('data-id');
+                const type = btn.getAttribute('data-type');
                 
                 if (type === 'image') {
                     downloadImage(id);
@@ -1069,12 +1573,106 @@
             }
         });
 
-        // Initial render (only for normal access)
-        if (window.location.protocol !== 'view-source:') {
-            renderPDFCards(pdfFiles, pdfGrid);
-            renderPDFCards(impPdfFiles, impPdfGrid);
-            renderImageCards(imageFiles, imageGrid);
+        // View More/Less functionality
+        viewMorePdfsBtn.addEventListener('click', function() {
+            if (pdfsVisible === 6) {
+                pdfsVisible = pdfFiles.length;
+                viewMorePdfsBtn.textContent = 'View Less';
+            } else {
+                pdfsVisible = 6;
+                viewMorePdfsBtn.textContent = 'View More';
+            }
+            renderPDFCards(pdfFiles, pdfMiniView, true);
+        });
+
+        viewMoreImpPdfsBtn.addEventListener('click', function() {
+            if (impPdfsVisible === 6) {
+                impPdfsVisible = impPdfFiles.length;
+                viewMoreImpPdfsBtn.textContent = 'View Less';
+            } else {
+                impPdfsVisible = 6;
+                viewMoreImpPdfsBtn.textContent = 'View More';
+            }
+            renderPDFCards(impPdfFiles, impPdfMiniView, true);
+        });
+
+        viewMoreImagesBtn.addEventListener('click', function() {
+            if (imagesVisible === 6) {
+                imagesVisible = imageFiles.length;
+                viewMoreImagesBtn.textContent = 'View Less';
+            } else {
+                imagesVisible = 6;
+                viewMoreImagesBtn.textContent = 'View More';
+            }
+            renderImageCards(imageFiles, imageMiniView, true);
+        });
+
+        // Theme toggle
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Floating Action Button
+        fab.addEventListener('click', function() {
+            quickActions.classList.toggle('show');
+            if (quickActions.classList.contains('show')) {
+                fab.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                fab.innerHTML = '<i class="fas fa-plus"></i>';
+            }
+        });
+
+        // Quick Actions
+        quickDownload.addEventListener('click', function() {
+            // Download all materials (in a real app, this would be a zip file)
+            showToast("Preparing download package...");
+        });
+
+        quickSearch.addEventListener('click', function() {
+            searchInput.focus();
+            quickActions.classList.remove('show');
+            fab.innerHTML = '<i class="fas fa-plus"></i>';
+        });
+
+        quickRoutine.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                mobileRoutinePopup.style.display = 'flex';
+            } else {
+                imageViewerTitle.textContent = "Semester Routine 2023";
+                fullImage.src = routineImage.src;
+                imageViewerContainer.style.display = 'block';
+            }
+            quickActions.classList.remove('show');
+            fab.innerHTML = '<i class="fas fa-plus"></i>';
+        });
+
+        // Update stats
+        function updateStats() {
+            totalPdfs.textContent = pdfFiles.length;
+            totalImpQuestions.textContent = impPdfFiles.length + imageFiles.length;
+            totalImages.textContent = imageFiles.length;
         }
+
+        // Update progress (simulated)
+        function updateProgress() {
+            // In a real app, this would be based on user activity
+            const progress = Math.min(75, Math.floor((pdfFiles.length + impPdfFiles.length + imageFiles.length) / 30 * 100));
+            progressFill.style.width = `${progress}%`;
+            progressPercent.textContent = `${progress}%`;
+        }
+
+        // Initial render
+        renderPDFCards(pdfFiles, pdfGrid);
+        renderPDFCards(impPdfFiles, impPdfGrid);
+        renderImageCards(imageFiles, imageGrid);
+        renderPDFCards(pdfFiles, pdfMiniView, true);
+        renderPDFCards(impPdfFiles, impPdfMiniView, true);
+        renderImageCards(imageFiles, imageMiniView, true);
     </script>
 </body>
 </html>
